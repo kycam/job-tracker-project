@@ -1,0 +1,10 @@
+CREATE DATABASE IF NOT EXISTS job_tracker;
+USE job_tracker;
+CREATE TABLE IF NOT EXISTS companies (company_id INT AUTO_INCREMENT PRIMARY KEY, company_name VARCHAR(100) NOT NULL, industry VARCHAR(50), website VARCHAR(200), city VARCHAR(50), state VARCHAR(50), notes TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE IF NOT EXISTS jobs (job_id INT AUTO_INCREMENT PRIMARY KEY, company_id INT NOT NULL, job_title VARCHAR(100) NOT NULL, job_description TEXT, job_type ENUM('Full-time','Part-time','Contract','Internship'), salary_min DECIMAL(10,2), salary_max DECIMAL(10,2), job_url VARCHAR(300), date_posted DATE, requirements JSON, is_active BOOLEAN DEFAULT TRUE, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CONSTRAINT fk_jobs_company FOREIGN KEY(company_id) REFERENCES companies(company_id));
+CREATE TABLE IF NOT EXISTS applications (application_id INT AUTO_INCREMENT PRIMARY KEY, job_id INT NOT NULL, application_date DATE NOT NULL, status ENUM('Applied','Screening','Interview','Offer','Rejected','Withdrawn') DEFAULT 'Applied', resume_version VARCHAR(50), cover_letter_sent BOOLEAN DEFAULT FALSE, interview_data JSON, response_date DATE, interview_date DATETIME, notes TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CONSTRAINT fk_app_job FOREIGN KEY(job_id) REFERENCES jobs(job_id));
+CREATE TABLE IF NOT EXISTS contacts (contact_id INT AUTO_INCREMENT PRIMARY KEY, company_id INT NOT NULL, contact_name VARCHAR(100) NOT NULL, title VARCHAR(100), email VARCHAR(100), phone VARCHAR(20), linkedin_url VARCHAR(200), notes TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CONSTRAINT fk_contact_company FOREIGN KEY(company_id) REFERENCES companies(company_id));
+CREATE INDEX idx_job_title ON jobs(job_title);
+CREATE INDEX idx_company_type ON jobs(company_id,job_type);
+CREATE INDEX idx_app_status ON applications(status);
+CREATE INDEX idx_company_industry ON companies(industry);
